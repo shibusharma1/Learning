@@ -1,26 +1,44 @@
 <?php
+include_once 'config/config.php';
 session_start();
 
-$default_email ="abc@gmail.com";
-$default_password ="password";
+
 
 if($_SERVER['REQUEST_METHOD'] == 'POST'){
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    if($email == $default_email){
-        if($password == $default_password)
-        {
-            $_SESSION['student_login']='login successful';
+    // echo $password;
+
+
+    $sql = "SELECT * FROM users WHERE email= '$email'";
+
+    $sql1 =mysqli_query($conn,$sql);
+
+
+
+    if(mysqli_num_rows($sql1) > 0){
+    $row = mysqli_fetch_assoc($sql1);
+
+    // echo $row['name'];
+    // echo $row['email'];
+    // echo $row['password'];
+    // exit;
+
+
+
+    if($row['password'] == $password){
+        $_SESSION['login'] = "login";
+            
             header("Location: student/index.php");
-        }
-        else{
-            echo "Wrong password";
-        }
-        
-    }else{
-        echo "<span style='color:red;'>wrong email</span>";
+
     }
+
+    
+}
+else{
+    echo "User not found.Please Register first.";
+}
 }
 
 ?>
