@@ -1,6 +1,15 @@
 <?php
 include_once 'config/config.php';
+
+// command to install php mailer
+// composer require phpmailer/phpmailer
+
+
+require '../vendor/autoload.php'; // Include PHPMailer if using Composer
 session_start();
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
 
 
 
@@ -29,18 +38,45 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
 
     if($row['password'] == $password){
         $_SESSION['login'] = "login";
-            
+
+        // code of mailer
+
+        
+        // Email Sending Code - PHPMailer
+        $mail = new PHPMailer(true);
+
+        try {
+            // SMTP Configuration
+            $mail->isSMTP();
+            $mail->Host = 'smtp.gmail.com';
+            $mail->SMTPAuth = true;
+            $mail->Username = 'nagarctservices@gmail.com';
+            $mail->Password = 'gnpl gqhu pukx gmal'; // Ensure this is a secure App Password
+            $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port = 587;
+
+            // Email Details
+            $mail->setFrom('nagarctservices@gmail.com', 'NagarYatra');
+            $mail->addAddress($email, "unknown");
+            $mail->isHTML(true);
+            $mail->Subject = "Login";
+
+            $mail->Body = "
+                            Login successfuly                        ";
+
+            $mail->AltBody = "Dear $name, you have requested to reset your NagarYatra password. Your temporary password is: $password. It will expire in 2 minutes. If you did not request this, please ignore this email or contact support.";
+
+            $mail->send();
+
+            $_SESSION['login'] = "login successful"
             header("Location: student/index.php");
 
-    }
 
-    
-}
-else{
-    echo "User not found.Please Register first.";
-}
-}
-
+        }catch (Exception $e) {
+            $_SESSION['error'] = "Email could not be sent. Error: " . $mail->ErrorInfo;
+        }
+   
+    }}}
 ?>
 <!DOCTYPE html>
 <html lang="en">
